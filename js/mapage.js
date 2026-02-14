@@ -49,36 +49,36 @@ function getFeatureStyle(feature) {
     case 'Point':
     case 'MultiPoint':
       return {
-        radius: 6,
-        color: '#0066cc',
-        fillColor: '#3399ff',
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.8,
+        radius: feature.properties.radius ?? 6,
+        color: feature.properties.color ?? '#0066cc',
+        fillColor: feature.properties.fillColor ?? '#3399ff',
+        weight: feature.properties.weight ?? 2,
+        opacity: feature.properties.opacity ?? 1,
+        fillOpacity: feature.properties.fillOpacity ?? 0.8,
       };
     case 'LineString':
     case 'MultiLineString':
       return {
-        color: '#ff8800',
-        weight: 3,
-        opacity: 0.9,
+        color: feature.properties.color ?? '#ff8800',
+        weight: feature.properties.weight ?? 3,
+        opacity: feature.properties.opacity ?? 0.9,
       };
     case 'Polygon':
     case 'MultiPolygon':
       return {
-        color: '#008000',
-        weight: 2,
-        opacity: 0.8,
-        fillColor: '#00b300',
-        fillOpacity: 0.3,
+        color: feature.properties.color ??'#0f550f',
+        weight: feature.properties.weight ?? 2,
+        opacity: feature.properties.opacity ?? 0.8,
+        fillColor: feature.properties.fillColor ?? '#109310',
+        fillOpacity: feature.properties.fillOpacity ?? 0.3,
       };
     default:
       return {
-        color: '#444',
-        weight: 2,
-        opacity: 0.8,
-        fillColor: '#888',
-        fillOpacity: 0.2,
+        color: feature.properties.color ?? '#444',
+        weight: feature.properties.weight ?? 2,
+        opacity: feature.properties.opacity ?? 0.8,
+        fillColor: feature.properties.fillColor ?? '#888',
+        fillOpacity: feature.properties.fillOpacity ?? 0.2,
       };
   }
 }
