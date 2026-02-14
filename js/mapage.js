@@ -13,7 +13,7 @@ const map = L.map('map', {
   layers: [osm],
 });
 
-// Geocoder
+/* // Geocoder
 L.Control.geocoder({
   defaultMarkGeocode: false,
 })
@@ -29,7 +29,7 @@ L.Control.geocoder({
 
     map.fitBounds(e.geocode.bbox);
   })
-  .addTo(map);
+  .addTo(map); */
 
 // DOM elements
 const fileInput = document.getElementById('fileInput');
