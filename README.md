@@ -6,7 +6,7 @@ The goal of the project is to provide a minimal, fast, and fully client-side map
 
 ---
 
-### [🚀 Go to MaPage](https://YOURUSERNAME.github.io/MaPage/)
+### [🚀 Go to MaPage](https://gujooo.github.io/MaPage/)
 
 ---
 
