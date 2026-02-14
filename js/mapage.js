@@ -402,12 +402,10 @@ function serializeState() {
 }
 
 function persistState() {
-  if (!browser || !browser.storage || !browser.storage.local) return;
   const state = serializeState();
-  browser.storage.local.set({ [STORAGE_KEY]: state }).catch((e) => {
-    console.error('Errore salvataggio stato', e);
-  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
+
 
 function restoreState(state) {
   if (!state || !Array.isArray(state.layers)) return;
@@ -425,13 +423,7 @@ function restoreState(state) {
   });
 }
 
-if (browser && browser.storage && browser.storage.local) {
-  browser.storage.local
-    .get(STORAGE_KEY)
-    .then((res) => {
-      if (res && res[STORAGE_KEY]) {
-        restoreState(res[STORAGE_KEY]);
-      }
-    })
-    .catch((e) => console.error('Errore lettura stato', e));
+const savedState = localStorage.getItem(STORAGE_KEY);
+if (savedState) {
+  restoreState(JSON.parse(savedState));
 }
