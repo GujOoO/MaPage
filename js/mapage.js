@@ -4,7 +4,7 @@ const defaultZoom = 13;
 
 const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
- attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> | <a href="https://github.com/GujOoO/MaPage" target="_blank" rel="noopener noreferrer">GujOoO/<strong>MaPage</strong></a>',
+ attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
 });
 
 const map = L.map('map', {
