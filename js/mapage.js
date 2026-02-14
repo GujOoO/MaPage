@@ -34,7 +34,6 @@ L.Control.geocoder({
 // DOM elements
 const fileInput = document.getElementById('fileInput');
 const fileInputPlaceholder = document.getElementById('fileInputPlaceholder');
-const browseBtn = document.getElementById('browseBtn');
 const layerList = document.getElementById('layerList');
 const panel = document.getElementById('control-panel');
 const panelHeader = document.getElementById('panel-header');
