@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MaPage</title>
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    /> <!-- rel="stylesheet" href="../lib/Control.Geocoder.css" -->
+    <link rel="stylesheet" href="css/mapage.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="control-panel" class="draggable">
+      <div id="panel-header">
+        <span>Layers Control</span>
+      </div>
+      <div id="panel-body">
+        <div id="fileInputWrapper">
+          <span id="fileInputPlaceholder">Select or Drag&Drop geoJSON</span>
+          <button id="browseBtn" type="button">Browse</button>
+          <input type="file" id="fileInput" accept=".geojson,.json" multiple />
+        </div>
+        <div id="legendTitle">Legend</div>
+        <ul id="layerList"></ul>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!--script src="../lib/Control.Geocoder.js"></script-->
+    <script src="js/mapage.js"></script>
+  </body>
+</html>
