@@ -64,7 +64,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 > **Note:** If a feature has no styling properties, the default values above are applied automatically.
 
 A minimal example of GeoJSON:
-```geojson
+```json
 {
   "type": "FeatureCollection",
   "features": [
