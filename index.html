@@ -6,20 +6,18 @@
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    /> <!-- rel="stylesheet" href="../lib/Control.Geocoder.css" -->
+    /> <!-- <rel="stylesheet" href="../lib/Control.Geocoder.css"> -->
     <link rel="stylesheet" href="css/mapage.css" />
   </head>
   <body>
     <div id="map"></div>
     <div id="control-panel" class="draggable">
       <div id="panel-header">
-        <span>Layers Control</span>
+        <span id="controlTitle">Layers Control</span>
+        <span id="fileInputPlaceholder">Drag&Drop geoJSON</span>
+        <input type="file" id="fileInput" accept=".geojson,.json" multiple />
       </div>
       <div id="panel-body">
-        <div id="fileInputWrapper">
-          <span id="fileInputPlaceholder">Drag&Drop geoJSON</span>
-          <input type="file" id="fileInput" accept=".geojson,.json" multiple />
-        </div>
         <ul id="layerList"></ul>
       </div>
     </div>
