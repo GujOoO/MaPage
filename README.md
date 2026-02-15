@@ -32,8 +32,8 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 | Property    | Type     | Description                         | Default  |
 |------------|---------|-------------------------------------|---------|
 | radius     | number  | Circle marker radius                | 6       |
-| color      | string  | Stroke color                        | <span style="display:inline-block;width:12px;height:12px;background:#0066cc;"></span> `#0066cc` |
-| fillColor  | string  | Fill color                          | <span style="display:inline-block;width:12px;height:12px;background:#3399ff;"></span> `#3399ff` |
+| color      | string  | Stroke color                        | ![#0066cc](https://img.shields.io/badge/%230066cc-0066cc?style=flat-square) |
+| fillColor  | string  | Fill color                          | ![#3399ff](https://img.shields.io/badge/%233399ff-3399ff?style=flat-square) |
 | weight     | number  | Stroke width                        | 2       |
 | opacity    | number  | Stroke opacity (0–1)               | 1       |
 | fillOpacity| number  | Fill opacity (0–1)                 | 0.8     |
@@ -42,7 +42,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 
 | Property | Type    | Description            | Default   |
 |----------|--------|------------------------|-----------|
-| color    | string | Line color             | <span style="display:inline-block;width:12px;height:12px;background:#ff8800;"></span> `#ff8800` |
+| color    | string | Line color             | ![#ff8800](https://img.shields.io/badge/%23ff8800-ff8800?style=flat-square) |
 | weight   | number | Line width             | 3         |
 | opacity  | number | Line opacity (0–1)     | 0.9       |
 
@@ -50,20 +50,20 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 
 | Property   | Type    | Description           | Default   |
 |------------|--------|----------------------|-----------|
-| color      | string | Stroke color          | <span style="display:inline-block;width:12px;height:12px;background:#0f550f;"></span> `#0f550f` |
+| color      | string | Stroke color          | ![#0f550f](https://img.shields.io/badge/%230f550f-0f550f?style=flat-square) |
 | weight     | number | Stroke width          | 2         |
 | opacity    | number | Stroke opacity (0–1) | 0.8       |
-| fillColor  | string | Fill color            | <span style="display:inline-block;width:12px;height:12px;background:#109310;"></span> `#109310` |
+| fillColor  | string | Fill color            | ![#109310](https://img.shields.io/badge/%23109310-109310?style=flat-square) |
 | fillOpacity| number | Fill opacity (0–1)    | 0.3       |
 
 ### Default (all other geometry types)
 
 | Property   | Type    | Description           | Default   |
 |------------|--------|----------------------|-----------|
-| color      | string | Stroke color          | <span style="display:inline-block;width:12px;height:12px;background:#444;"></span> `#444`    |
+| color      | string | Stroke color          | ![#444](https://img.shields.io/badge/%23444-444?style=flat-square) |
 | weight     | number | Stroke width          | 2         |
 | opacity    | number | Stroke opacity (0–1) | 0.8       |
-| fillColor  | string | Fill color            | <span style="display:inline-block;width:12px;height:12px;background:#888;"></span> `#888`    |
+| fillColor  | string | Fill color            | ![#888](https://img.shields.io/badge/%23888-888?style=flat-square) |
 | fillOpacity| number | Fill opacity (0–1)    | 0.2       |
 
 
