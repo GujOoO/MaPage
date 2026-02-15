@@ -25,7 +25,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 
 > **Note:**
 > - If a feature has no styling properties, the default values above are applied automatically.
-> - The field names are **case-sensitive**; different field names will be treated as feature details in popups.
+> - The field names are **case-sensitive**; different field names will be treated as feature details and showed in popups.
 
 ### Point / MultiPoint
 
