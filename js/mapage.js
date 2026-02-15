@@ -98,7 +98,21 @@ function getFeatureStyle(feature) {
 function onEachFeature(feature, layer) {
   // Generate popup from feature properties
   if (feature.properties) {
+    const styleFields = [
+      'color',
+      'weight',
+      'opacity',
+      'fillColor',
+      'fillOpacity',
+      'radius'
+    ];
+
     const entries = Object.entries(feature.properties)
+      .filter(([k, v]) =>
+        !styleFields.includes(k) && 
+        v !== null &&
+       v !== ''
+      )
       .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
       .join('<br />');
 
