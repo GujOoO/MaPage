@@ -303,7 +303,6 @@ function zoomToLayer(id) {
 ========================================================= */
 // Update panel header visibility based on whether there are layers
 function updatePanelHeaderVisibility() {
-
   if (layerList.children.length > 0) {
     panelHeader.style.display = 'none';
   } else {

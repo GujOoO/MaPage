@@ -140,6 +140,7 @@ MaPage is built using the following open-source libraries and data sources:
 - **[OpenStreetMap](https://www.openstreetmap.org/)** – Base map data  
 - **[georaster](https://github.com/GeoTIFF/georaster)** – Client-side GeoTIFF parsing  
 - **[georaster-layer-for-leaflet](https://github.com/GeoTIFF/georaster-layer-for-leaflet)** – GeoTIFF rendering in Leaflet  
+- **[GeoTIFF.js](https://github.com/geotiffjs/geotiff.js)** – GeoTIFF decoding library  
 
 ### Data Attribution
 
