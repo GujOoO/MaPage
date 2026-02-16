@@ -35,6 +35,12 @@ const panel = document.getElementById('control-panel');
 const panelHeader = document.getElementById('panel-header');
 const fileBrowseTrigger = document.getElementById('fileBrowseTrigger');
 
+// Event delegation for dynamic Browser trigger
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'fileBrowseTrigger') {
+    fileInput.click();
+  }
+});
 
 /* =========================================================
    APPLICATION STATE (Multiple GeoJSON layers management)
@@ -302,18 +308,6 @@ function updatePanelHeaderVisibility() {
     panelHeader.style.display = 'none';
   } else {
     panelHeader.style.display = 'flex';
-
-    // Ripristina testo originale
-    fileInputPlaceholder.innerHTML = `
-      <span id="fileBrowseTrigger" class="file-link">Browser</span>
-      or Drag&Drop
-    `;
-
-    // Riaggancia event listener
-    const newTrigger = document.getElementById('fileBrowseTrigger');
-    newTrigger.addEventListener('click', () => {
-      fileInput.click();
-    });
   }
 }
 
@@ -447,12 +441,6 @@ fileInput.addEventListener('change', (e) => {
 
   handleFiles(files);
 });
-
-// Open file dialog when clicking "Browser"
-fileBrowseTrigger.addEventListener('click', () => {
-  fileInput.click();
-});
-
 
 // Prevent default browser drag behavior
 function preventDefaults(e) {
