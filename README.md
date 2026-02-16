@@ -1,10 +1,10 @@
 # MaPage (WIP)
 
-**MaPage** (Map Page) is a lightweight web application built with Leaflet that allows users to load and visualize GeoJSON files via Drag & Drop.
+**MaPage** (Map Page) is a lightweight web application built with Leaflet that allows users to load and visualize Vector (GeoJSON) and Raster (GeoTIFF) files.
 
 Map Page aims to be a simple, minimal client-side map viewer with:
 
-- Import and view your own GeoJSON files (Drag & Drop), automatically applying default styles or preserving styles defined in the file
+- Import and view your own GeoJSON or GeoTIFF files, automatically applying default styles or preserving styles defined in the file
 - View feature details in popups by clicking on layers
 - Inline layer renaming and toggling by right-clicking on layer name
 - Zoom to layer feature by double-clicking on layer name
@@ -12,9 +12,8 @@ Map Page aims to be a simple, minimal client-side map viewer with:
 - No Registration or authentication
 - Fully runs in the browser
 
----
 
-### [🚀 Go to MaPage](https://gujooo.github.io/MaPage/)
+## [🚀 Go to MaPage](https://gujooo.github.io/MaPage/)
 
 ---
 
@@ -131,3 +130,5 @@ An example of GeoJSON:
   ]
 }
 ```
+---
+# Credits

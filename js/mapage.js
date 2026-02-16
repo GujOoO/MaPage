@@ -45,7 +45,7 @@ let layerIdCounter = 0;
 
 // Store loaded layers
 // id -> { layerGroup, name, data }
-const geoJsonLayers = new Map();
+const layers = new Map();
 
 /* =========================================================
    GEOJSON STYLING LOGIC
@@ -189,11 +189,11 @@ async function addGeoTiffLayer(name, file) {
 
   rasterLayer.addTo(map);
 
-  geoJsonLayers.set(id, {
-    layerGroup: rasterLayer,
+  layers.set(id, {
+    layer: rasterLayer,
     name,
-    data: null,
-    type: 'geotiff'
+    type: 'raster',
+    data: null
   });
 
   addLayerListItem(id, name);
@@ -208,8 +208,8 @@ async function addGeoTiffLayer(name, file) {
    LAYER MANAGEMENT
 ========================================================= */
 
-// Add a new GeoJSON layer to the map
-function addGeoJsonLayer(name, geojson) {
+// Add a new Vector layer to the map
+function addVectorLayer(name, geojson) {
   const id = `layer-${layerIdCounter++}`;
 
   const layerGroup = L.geoJSON(geojson, {
@@ -218,7 +218,12 @@ function addGeoJsonLayer(name, geojson) {
     pointToLayer,
   }).addTo(map);
 
-  geoJsonLayers.set(id, { layerGroup, name, data: geojson });
+  layers.set(id, {
+    layer: layerGroup,
+    name,
+    type: 'vector',
+    data: geojson
+  });
 
   addLayerListItem(id, name);
   fitToAllLayers();
@@ -226,13 +231,13 @@ function addGeoJsonLayer(name, geojson) {
   return id;
 }
 
-// Remove a GeoJSON layer
-function removeGeoJsonLayer(id) {
-  const entry = geoJsonLayers.get(id);
+// Remove a Layer
+function removeLayer(id) {
+  const entry = layers.get(id);
   if (!entry) return;
 
-  map.removeLayer(entry.layerGroup);
-  geoJsonLayers.delete(id);
+  map.removeLayer(entry.layer);
+  layers.delete(id);
 
   const li = document.querySelector(`[data-layer-id="${id}"]`);
   if (li) li.remove();
@@ -244,13 +249,13 @@ function removeGeoJsonLayer(id) {
   persistState();
 }
 
-// Toggle layer visibility
-function toggleGeoJsonLayer(id, visible) {
-  const entry = geoJsonLayers.get(id);
+// Toggle Layer visibility
+function toggleLayer(id, visible) {
+  const entry = layers.get(id);
   if (!entry) return;
 
-  if (visible) entry.layerGroup.addTo(map);
-  else map.removeLayer(entry.layerGroup);
+  if (visible) entry.layer.addTo(map);
+  else map.removeLayer(entry.layer);
 
   fitToAllLayers();
 }
@@ -259,8 +264,8 @@ function toggleGeoJsonLayer(id, visible) {
 function fitToAllLayers() {
   const allBounds = [];
 
-  geoJsonLayers.forEach(({ layerGroup }) => {
-    const b = layerGroup.getBounds?.();
+  layers.forEach(({ layer }) => {
+    const b = layer.getBounds?.();
     if (b?.isValid?.()) allBounds.push(b);
   });
 
@@ -278,10 +283,10 @@ function fitToAllLayers() {
 
 // Zoom only to one layer
 function zoomToLayer(id) {
-  const entry = geoJsonLayers.get(id);
+  const entry = layers.get(id);
   if (!entry) return;
 
-  const b = entry.layerGroup.getBounds?.();
+  const b = entry.layer.getBounds?.();
   if (b?.isValid?.()) {
     map.fitBounds(b, { padding: [20, 20] });
   }
@@ -344,13 +349,13 @@ function addLayerListItem(id, name) {
 
   // Visibility toggle
   checkbox.addEventListener('change', () => {
-    toggleGeoJsonLayer(id, checkbox.checked);
+    toggleLayer(id, checkbox.checked);
     persistState();
   });
 
   // Remove layer
   trash.addEventListener('click', () => {
-    removeGeoJsonLayer(id);
+    removeLayer(id);
   });
 
   // Double click to zoom
@@ -381,7 +386,7 @@ function addLayerListItem(id, name) {
       label.textContent = trimmed;
       label.title = trimmed;
 
-      const entry = geoJsonLayers.get(id);
+      const entry = layers.get(id);
       if (entry) entry.name = trimmed;
 
       persistState();
@@ -409,20 +414,16 @@ async function handleFiles(files) {
 
       // GeoJSON
       if (extension === 'geojson' || extension === 'json') {
-
         const text = await file.text();
         const json = JSON.parse(text);
-
         if (json.type === 'FeatureCollection') {
-
           const displayName = getDisplayName(file.name);
-          addGeoJsonLayer(displayName, json);
+          addVectorLayer(displayName, json);
         }
       }
 
       // GeoTIFF / COG
       else if (extension === 'tif' || extension === 'tiff') {
-
         const displayName = getDisplayName(file.name);
         await addGeoTiffLayer(displayName, file);
       }
@@ -434,7 +435,6 @@ async function handleFiles(files) {
 
   persistState();
 }
-
 
 // File input handler
 fileInput.addEventListener('change', (e) => {
@@ -511,20 +511,24 @@ const STORAGE_KEY = 'mapOverLayer:lastState';
 
 // Convert current layers to serializable object
 function serializeState() {
-  const layers = [];
 
-  geoJsonLayers.forEach((value, id) => {
+  const serializedLayers = [];
+
+  layers.forEach((value, id) => {
+
+    if (value.type !== 'vector') return; // skip raster
+
     const li = document.querySelector(`[data-layer-id="${id}"]`);
     const visible = li?.querySelector('input')?.checked ?? true;
 
-    layers.push({
+    serializedLayers.push({
       name: value.name,
       data: value.data,
-      visible,
+      visible
     });
   });
 
-  return { layers };
+  return { layers: serializedLayers };
 }
 
 // Save state to localStorage
@@ -537,13 +541,13 @@ function restoreState(state) {
   if (!state?.layers) return;
 
   state.layers.forEach((l) => {
-    const newId = addGeoJsonLayer(l.name, l.data);
+    const newId = addVectorLayer(l.name, l.data);
 
     const li = document.querySelector(`[data-layer-id="${newId}"]`);
     const checkbox = li?.querySelector('input');
 
     if (checkbox) checkbox.checked = l.visible;
-    toggleGeoJsonLayer(newId, l.visible);
+    toggleLayer(newId, l.visible);
   });
 }
 
