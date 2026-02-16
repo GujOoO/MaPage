@@ -33,6 +33,8 @@ const fileInputPlaceholder = document.getElementById('fileInputPlaceholder');
 const layerList = document.getElementById('layerList');
 const panel = document.getElementById('control-panel');
 const panelHeader = document.getElementById('panel-header');
+const fileBrowseTrigger = document.getElementById('fileBrowseTrigger');
+
 
 /* =========================================================
    APPLICATION STATE (Multiple GeoJSON layers management)
@@ -147,6 +149,62 @@ function getDisplayName(fileName) {
 }
 
 /* =========================================================
+   GEOTIFF / COG SUPPORT (Client-side rendering)
+========================================================= */
+// Add a GeoTIFF (including COG) layer to the map
+async function addGeoTiffLayer(name, file) {
+
+  const id = `layer-${layerIdCounter++}`;
+
+  // Read file as ArrayBuffer (works for local COG)
+  const arrayBuffer = await file.arrayBuffer();
+
+  const georaster = await parseGeoraster(arrayBuffer);
+
+  const rasterLayer = new GeoRasterLayer({
+    georaster: georaster,
+    opacity: 0.8,
+    resolution: 256,
+
+    // Simple grayscale stretch
+    pixelValuesToColorFn: (values) => {
+
+      const value = values[0];
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === georaster.noDataValue
+      ) return null;
+
+      const min = georaster.mins[0];
+      const max = georaster.maxs[0];
+
+      const normalized = (value - min) / (max - min);
+      const gray = Math.floor(normalized * 255);
+
+      return `rgb(${gray},${gray},${gray})`;
+    }
+  });
+
+  rasterLayer.addTo(map);
+
+  geoJsonLayers.set(id, {
+    layerGroup: rasterLayer,
+    name,
+    data: null,
+    type: 'geotiff'
+  });
+
+  addLayerListItem(id, name);
+
+  map.fitBounds(rasterLayer.getBounds());
+
+  return id;
+}
+
+
+/* =========================================================
    LAYER MANAGEMENT
 ========================================================= */
 
@@ -234,10 +292,23 @@ function zoomToLayer(id) {
 ========================================================= */
 // Update panel header visibility based on whether there are layers
 function updatePanelHeaderVisibility() {
+
   if (layerList.children.length > 0) {
-    panelHeader.style.display = 'none'; // hide header if there are layers
+    panelHeader.style.display = 'none';
   } else {
-    panelHeader.style.display = 'flex'; // show header if there are layers
+    panelHeader.style.display = 'flex';
+
+    // Ripristina testo originale
+    fileInputPlaceholder.innerHTML = `
+      <span id="fileBrowseTrigger" class="file-link">Browser</span>
+      or Drag&Drop
+    `;
+
+    // Riaggancia event listener
+    const newTrigger = document.getElementById('fileBrowseTrigger');
+    newTrigger.addEventListener('click', () => {
+      fileInput.click();
+    });
   }
 }
 
@@ -329,15 +400,33 @@ function addLayerListItem(id, name) {
 ========================================================= */
 
 async function handleFiles(files) {
+
   for (const file of files) {
+
+    const extension = file.name.split('.').pop().toLowerCase();
+
     try {
-      const text = await file.text();
-      const json = JSON.parse(text);
 
-      if (json.type !== 'FeatureCollection') continue;
+      // GeoJSON
+      if (extension === 'geojson' || extension === 'json') {
 
-      const displayName = getDisplayName(file.name);
-      addGeoJsonLayer(displayName, json);
+        const text = await file.text();
+        const json = JSON.parse(text);
+
+        if (json.type === 'FeatureCollection') {
+
+          const displayName = getDisplayName(file.name);
+          addGeoJsonLayer(displayName, json);
+        }
+      }
+
+      // GeoTIFF / COG
+      else if (extension === 'tif' || extension === 'tiff') {
+
+        const displayName = getDisplayName(file.name);
+        await addGeoTiffLayer(displayName, file);
+      }
+
     } catch (e) {
       console.error('Invalid file:', file.name, e);
     }
@@ -345,6 +434,7 @@ async function handleFiles(files) {
 
   persistState();
 }
+
 
 // File input handler
 fileInput.addEventListener('change', (e) => {
@@ -357,6 +447,12 @@ fileInput.addEventListener('change', (e) => {
 
   handleFiles(files);
 });
+
+// Open file dialog when clicking "Browser"
+fileBrowseTrigger.addEventListener('click', () => {
+  fileInput.click();
+});
+
 
 // Prevent default browser drag behavior
 function preventDefaults(e) {
