@@ -1,6 +1,6 @@
 # MaPage (WIP)
 
-**MaPage** (Map Page) is a lightweight web application built with Leaflet that allows users to load and visualize Vector (GeoJSON) and Raster (GeoTIFF) files.
+**MaPage** (Map Page) is a lightweight GitHub Page built with Leaflet that allows users to load and visualize Vector (GeoJSON) and Raster (GeoTIFF) files.
 
 Map Page aims to be a simple, minimal client-side map viewer with:
 
@@ -17,8 +17,8 @@ Map Page aims to be a simple, minimal client-side map viewer with:
 
 ---
 
-# Styling
-## GeoJSON
+## Styling
+### GeoJSON
 
 You can customize the style of each feature in your GeoJSON file by adding specific properties to the `properties` object.
 
@@ -26,7 +26,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 > - If a feature has no styling properties, the default values above are applied automatically.
 > - The field names are **case-sensitive**; different field names will be treated as feature details and showed in popups.
 
-### Point / MultiPoint
+#### Point / MultiPoint
 
 | Property    | Type     | Description                         | Default  |
 |------------|---------|-------------------------------------|---------|
@@ -37,7 +37,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 | opacity    | number  | Stroke opacity (0–1)               | 1       |
 | fillOpacity| number  | Fill opacity (0–1)                 | 0.8     |
 
-### LineString / MultiLineString
+#### LineString / MultiLineString
 
 | Property | Type    | Description            | Default   |
 |----------|--------|------------------------|-----------|
@@ -45,7 +45,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 | weight   | number | Line width             | 3         |
 | opacity  | number | Line opacity (0–1)     | 0.9       |
 
-### Polygon / MultiPolygon
+#### Polygon / MultiPolygon
 
 | Property   | Type    | Description           | Default   |
 |------------|--------|----------------------|-----------|
@@ -55,7 +55,7 @@ You can customize the style of each feature in your GeoJSON file by adding speci
 | fillColor  | string | Fill color            | ![#109310](https://img.shields.io/badge/%23109310-109310?style=flat-square) |
 | fillOpacity| number | Fill opacity (0–1)    | 0.3       |
 
-### Default (all other geometry types)
+#### Default (all other geometry types)
 
 | Property   | Type    | Description           | Default   |
 |------------|--------|----------------------|-----------|
@@ -131,4 +131,17 @@ An example of GeoJSON:
 }
 ```
 ---
-# Credits
+
+## Credits
+
+MaPage is built using the following open-source libraries and data sources:
+
+- **[Leaflet](https://leafletjs.com/)** – Interactive maps library  
+- **[OpenStreetMap](https://www.openstreetmap.org/)** – Base map data  
+- **[georaster](https://github.com/GeoTIFF/georaster)** – Client-side GeoTIFF parsing  
+- **[georaster-layer-for-leaflet](https://github.com/GeoTIFF/georaster-layer-for-leaflet)** – GeoTIFF rendering in Leaflet  
+
+### Data Attribution
+
+Map tiles [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
+
