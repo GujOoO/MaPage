@@ -29,11 +29,13 @@ const map = L.map('map', {
 ========================================================= */
 
 const fileInput = document.getElementById('fileInput');
+const filePlaceholderText = document.getElementById('filePlaceholderText');
+const fileBrowseTrigger = document.getElementById('fileBrowseTrigger');
 const fileInputPlaceholder = document.getElementById('fileInputPlaceholder');
 const layerList = document.getElementById('layerList');
 const panel = document.getElementById('control-panel');
 const panelHeader = document.getElementById('panel-header');
-const fileBrowseTrigger = document.getElementById('fileBrowseTrigger');
+const loadingOverlay = document.getElementById('loading-overlay');
 
 // Event delegation for dynamic Browser trigger
 document.addEventListener('click', (e) => {
@@ -41,6 +43,17 @@ document.addEventListener('click', (e) => {
     fileInput.click();
   }
 });
+
+
+/* Loading */
+function showLoader() {
+  loadingOverlay.classList.remove('hidden');
+}
+
+function hideLoader() {
+  loadingOverlay.classList.add('hidden');
+}
+
 
 /* =========================================================
    APPLICATION STATE (Multiple GeoJSON layers management)
@@ -307,8 +320,15 @@ function updatePanelHeaderVisibility() {
     panelHeader.style.display = 'none';
   } else {
     panelHeader.style.display = 'flex';
+
+    // Reset placeholder text
+    filePlaceholderText.textContent = 'or Drag&Drop';
+
+    // Reset file input (importantissimo)
+    fileInput.value = '';
   }
 }
+
 
 function addLayerListItem(id, name) {
   const li = document.createElement('li');
@@ -399,16 +419,22 @@ function addLayerListItem(id, name) {
 
 async function handleFiles(files) {
 
-  for (const file of files) {
+  if (!files?.length) return;
 
-    const extension = file.name.split('.').pop().toLowerCase();
+  showLoader();
 
-    try {
+  try {
+
+    for (const file of files) {
+
+      const extension = file.name.split('.').pop().toLowerCase();
 
       // GeoJSON
       if (extension === 'geojson' || extension === 'json') {
+
         const text = await file.text();
         const json = JSON.parse(text);
+
         if (json.type === 'FeatureCollection') {
           const displayName = getDisplayName(file.name);
           addVectorLayer(displayName, json);
@@ -417,17 +443,21 @@ async function handleFiles(files) {
 
       // GeoTIFF / COG
       else if (extension === 'tif' || extension === 'tiff') {
+
         const displayName = getDisplayName(file.name);
         await addGeoTiffLayer(displayName, file);
       }
-
-    } catch (e) {
-      console.error('Invalid file:', file.name, e);
     }
+
+  } catch (e) {
+    console.error('Invalid file:', e);
+  } finally {
+    hideLoader();
   }
 
   persistState();
 }
+
 
 // File input handler
 fileInput.addEventListener('change', (e) => {
@@ -435,8 +465,9 @@ fileInput.addEventListener('change', (e) => {
   if (!files?.length) return;
 
   if (files.length === 1)
-    fileInputPlaceholder.textContent = getDisplayName(files[0].name);
-  else fileInputPlaceholder.textContent = `${files.length} files selected`;
+    filePlaceholderText.textContent = getDisplayName(files[0].name);
+  else
+    filePlaceholderText.textContent = `${files.length} files selected`;
 
   handleFiles(files);
 });
