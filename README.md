@@ -21,7 +21,7 @@ It was built with one goal in mind: to let anyone open and explore geospatial da
 ---
 
 ## Tutorial
-
+![video](/images/Tutorial_202602.mp4)
 ---
 ## Import Your Style
 ### GeoJSON
