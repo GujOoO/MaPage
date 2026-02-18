@@ -178,7 +178,7 @@ function getDisplayName(fileName) {
 /* =========================================================
    GEOTIFF / COG SUPPORT (Client-side rendering)
 ========================================================= */
-const rasterStyle = {colorMap: 'grayscale'};
+const rasterStyle = {colorMap: null};
 
 function getColorFromNormalized(value, colorMap) {
   value = Math.max(0, Math.min(1, value));
@@ -306,22 +306,28 @@ async function addGeoTiffLayer(name, file) {
 
     // Simple grayscale stretch
     pixelValuesToColorFn: (values) => {
+      if (!values || values.includes(georaster.noDataValue)) return null;
+
+      const entry = layers.get(id);
+
+      // ✅ Se RGB (3 bande) e nessuna palette selezionata → colori originali
+      if (georaster.numberOfRasters >= 3 && !entry.colorMap) {
+
+        const r = values[0];
+        const g = values[1];
+        const b = values[2];
+
+        return `rgb(${r},${g},${b})`;
+      }
+
+      // ✅ Altrimenti applica normalizzazione su prima banda
       const value = values[0];
-
-      if (
-        value === null ||
-        value === undefined ||
-        value === georaster.noDataValue
-      ) return null;
-
       const min = georaster.mins[0];
       const max = georaster.maxs[0];
 
       const normalized = (value - min) / (max - min);
 
-      const entry = layers.get(id);
-      return getColorFromNormalized(normalized, entry.colorMap);
-
+      return getColorFromNormalized(normalized, entry.colorMap || 'grayscale');
     }
   });
 
@@ -334,7 +340,7 @@ async function addGeoTiffLayer(name, file) {
     data: null,
     min: georaster.mins[0],
     max: georaster.maxs[0],
-    colorMap: 'grayscale'
+    colorMap: null
   });
 
 
@@ -480,7 +486,10 @@ function addLayerListItem(id, name) {
 
     const gradient = document.createElement('div');
     gradient.className = 'raster-gradient';
-    gradient.style.background = buildGradientCSS(rasterStyle.colorMap);
+    gradient.style.background = gradient.style.background = entry.colorMap
+      ? buildGradientCSS(entry.colorMap)
+      : 'linear-gradient(to right, black, white)';
+
     gradient.style.cursor = 'pointer';
 
     gradient.addEventListener('click', (e) => {

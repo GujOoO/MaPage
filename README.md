@@ -1,23 +1,29 @@
-# MaPage (WIP)
+# MaPage
 
-**MaPage** (Map Page) is a lightweight GitHub Page built with Leaflet that allows users to load and visualize Vector (GeoJSON) and Raster (GeoTIFF) files.
+**MaPage** (Map Page) is a minimal GitHub Page designed to read and visualize GeoJSON and GeoTIFF files directly in your browser; it is a fully client-side map viewer powered by Leaflet.
 
-Map Page aims to be a simple, minimal client-side map viewer with:
+It was built with one goal in mind: to let anyone open and explore geospatial data without installing software, creating accounts, or uploading files to third-party platforms.
 
-- Import and view your own GeoJSON or GeoTIFF files, automatically applying default styles or preserving styles defined in the file
-- View feature details in popups by clicking on layers
-- Inline layer renaming and toggling by right-clicking on layer name
-- Zoom to layer feature by double-clicking on layer name
+##### Features
+- Load and visualize your own GeoJSON (vector) and GeoTIFF (raster) files
+- User-friendly interface:
+  - Click features to view their attributes in popups
+  - Rename and toggle layers with a right-click
+  - Zoom to a layer’s extent with a double-click
+  - Choose your own color palette for rasters or import your style for vector layers
+- No registration or authentication
 - No ads
-- No Registration or authentication
-- Fully runs in the browser
 
+ ...just a simple static GitHub Page.
 
-## [🚀 Go to MaPage](https://gujooo.github.io/MaPage/)
+> ## [🚀 Go to MaPage](https://gujooo.github.io/MaPage/)
 
 ---
 
-## Styling
+## Tutorial
+
+---
+## Import Your Style
 ### GeoJSON
 
 You can customize the style of each feature in your GeoJSON file by adding specific properties to the `properties` object.
@@ -130,6 +136,11 @@ An example of GeoJSON:
   ]
 }
 ```
+
+### GeoTIFF
+
+
+
 ---
 
 ## Credits
@@ -138,11 +149,9 @@ MaPage is built using the following open-source libraries and data sources:
 
 - **[Leaflet](https://leafletjs.com/)** – Interactive maps library  
 - **[OpenStreetMap](https://www.openstreetmap.org/)** – Base map data  
-- **[georaster](https://github.com/GeoTIFF/georaster)** – Client-side GeoTIFF parsing  
-- **[georaster-layer-for-leaflet](https://github.com/GeoTIFF/georaster-layer-for-leaflet)** – GeoTIFF rendering in Leaflet  
+- **[Georaster](https://github.com/GeoTIFF/georaster)** – Client-side GeoTIFF parsing  
+- **[Georaster-layer-for-leaflet](https://github.com/GeoTIFF/georaster-layer-for-leaflet)** – GeoTIFF rendering in Leaflet  
 - **[GeoTIFF.js](https://github.com/geotiffjs/geotiff.js)** – GeoTIFF decoding library  
 
-### Data Attribution
 
-Map tiles [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
 
