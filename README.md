@@ -21,7 +21,7 @@ It was built with one goal in mind: to let anyone open and explore geospatial da
 ---
 
 ## Tutorial
-![video](/images/Tutorial_202602.mp4)
+![video](./images/Tutorial_202602.mp4)
 ---
 ## Import Your Style
 ### GeoJSON
@@ -154,23 +154,7 @@ It is always possible to revert back to the default rendering using the “`canc
 
 #### Available Color Palettes
 The following color palettes are available for single-band rendering and RGB-to-PCT conversion:
-
-| Palette     | Preview                                      |
-| ----------- | --------------------------- |
-| Grayscale   | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#000000,#ffffff);"></div>    |
-| Grayscale   | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#ffffff,#000000);"></div>                |
-| Viridis     | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#440154,#482777,#3f4a8a,#31688e,#26828e,#1f9e89,#35b779,#6ece58,#b5de2b,#fde725);"></div> |
-| Reverse Viridis     | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#fde725,#b5de2b,#6ece58,#35b779,#1f9e89,#26828e,#31688e,#3f4a8a,#482777,#440154);"></div> |
-| Magma       | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#000004,#1b0c41,#4f0a6d,#781c6d,#a52c60,#cf4446,#ed6925,#fb9b06,#f7d13d,#fcfdbf);"></div> |
-| Reverse Magma       | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#fcfdbf,#f7d13d,#fb9b06,#ed6925,#cf4446,#a52c60,#781c6d,#4f0a6d,#1b0c41,#000004);"></div> |
-| YlOrRd      | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#ffffb2,#fecc5c,#fd8d3c,#f03b20,#b10026);"></div>                         |
-| RdOrYl      | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#bd0026,#f03b20,#fd8d3c,#fecc5c,#ffffb2);"></div>                                         |
-| BlWtRd  | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#0718AD,#ffffff,#D10F0F);"></div>                                         |
-| RdWtBl  | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#D10F0F,#ffffff,#0718AD);"></div>                                         |
-| Greens      | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#f7fcf5,#e5f5e0,#c7e9c0,#a1d99b,#74c476,#41ab5d,#238b45,#005a32);"></div>                 |
-| Reverse Greens | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#2e7d32,#4caf50,#81c784,#a5d6a7,#c8e6c9);"></div>                                         |
-| Blues       | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#f7fbff,#deebf7,#c6dbef,#9ecae1,#6baed6,#4292c6,#2171b5,#084594);"></div>                 |
-| Reverse Blues  | <div style="width:160px;height:10px;border-radius:3px;background:linear-gradient(to right,#0d47a1,#1976d2,#42a5f5,#90caf9,#bbdefb);"></div>                                         |
+![gradients](./images/gradients.png)
 
 
 ---
