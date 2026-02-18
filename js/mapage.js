@@ -23,6 +23,13 @@ const map = L.map('map', {
   zoom: defaultZoom,
   layers: [osm],
 });
+// Create custom panes to position Raster vs Vector
+map.createPane('rasterPane');
+map.getPane('rasterPane').style.zIndex = 200;
+
+map.createPane('vectorPane');
+map.getPane('vectorPane').style.zIndex = 400;
+
 
 /* =========================================================
    DOM REFERENCES
@@ -36,6 +43,7 @@ const layerList = document.getElementById('layerList');
 const panel = document.getElementById('control-panel');
 const panelHeader = document.getElementById('panel-header');
 const loadingOverlay = document.getElementById('loading-overlay');
+
 
 // Event delegation for dynamic Browser trigger
 document.addEventListener('click', (e) => {
@@ -170,6 +178,30 @@ function getDisplayName(fileName) {
 /* =========================================================
    GEOTIFF / COG SUPPORT (Client-side rendering)
 ========================================================= */
+const rasterStyle = {colorMap: 'grayscale'};
+
+function getColorFromNormalized(value, colorMap) {
+  value = Math.max(0, Math.min(1, value));
+
+  switch (colorMap) {
+
+    case 'viridis':
+      return `hsl(${260 - value * 260}, 70%, ${30 + value * 40}%)`;
+
+    case 'inferno':
+      return `hsl(${30 - value * 30}, 100%, ${20 + value * 50}%)`;
+
+    case 'magma':
+      return `hsl(${300 - value * 300}, 80%, ${20 + value * 50}%)`;
+
+    case 'grayscale':
+    default:
+      const gray = Math.floor(value * 255);
+      return `rgb(${gray},${gray},${gray})`;
+  }
+}
+
+
 // Add a GeoTIFF (including COG) layer to the map
 async function addGeoTiffLayer(name, file) {
 
@@ -181,13 +213,13 @@ async function addGeoTiffLayer(name, file) {
   const georaster = await parseGeoraster(arrayBuffer);
 
   const rasterLayer = new GeoRasterLayer({
+    pane: 'rasterPane',
     georaster: georaster,
     opacity: 0.8,
     resolution: 256,
 
     // Simple grayscale stretch
     pixelValuesToColorFn: (values) => {
-
       const value = values[0];
 
       if (
@@ -200,9 +232,8 @@ async function addGeoTiffLayer(name, file) {
       const max = georaster.maxs[0];
 
       const normalized = (value - min) / (max - min);
-      const gray = Math.floor(normalized * 255);
 
-      return `rgb(${gray},${gray},${gray})`;
+      return getColorFromNormalized(normalized, rasterStyle.colorMap);
     }
   });
 
@@ -212,7 +243,9 @@ async function addGeoTiffLayer(name, file) {
     layer: rasterLayer,
     name,
     type: 'raster',
-    data: null
+    data: null,
+    min: georaster.mins[0],
+    max: georaster.maxs[0]
   });
 
   addLayerListItem(id, name);
@@ -232,6 +265,7 @@ function addVectorLayer(name, geojson) {
   const id = `layer-${layerIdCounter++}`;
 
   const layerGroup = L.geoJSON(geojson, {
+    pane: 'vectorPane',
     style: getFeatureStyle,
     onEachFeature,
     pointToLayer,
@@ -337,15 +371,36 @@ function addLayerListItem(id, name) {
 
   const left = document.createElement('div');
   left.className = 'layer-left';
+  const right = document.createElement('div');
+  right.className = 'layer-right';
 
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.checked = true;
 
   const label = document.createElement('span');
+  const entry = layers.get(id);
+  if (entry?.type === 'raster') {
+
+    const legend = document.createElement('div');
+    legend.className = 'raster-legend';
+
+    const minLabel = document.createElement('span');
+    minLabel.textContent = entry.min.toFixed(2);
+
+    const gradient = document.createElement('div');
+    gradient.className = 'raster-gradient';
+
+    const maxLabel = document.createElement('span');
+    maxLabel.textContent = entry.max.toFixed(2);
+
+    legend.append(minLabel, gradient, maxLabel);
+    right.appendChild(legend);
+  }
   label.className = 'layer-name';
   label.textContent = name;
   label.title = name;
+
 
   left.append(checkbox, label);
 
@@ -354,7 +409,7 @@ function addLayerListItem(id, name) {
   trash.textContent = '🗑';
   trash.title = 'Remove layer';
 
-  li.append(left, trash);
+  li.append(left, right, trash);
   layerList.appendChild(li);
 
   // Update header visibility after adding a layer

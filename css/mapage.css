@@ -95,6 +95,12 @@ body {
   gap: 6px;
 }
 
+.layer-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .layer-name {
   max-width: 170px;
   white-space: nowrap;
@@ -185,4 +191,20 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Raster legend */
+.raster-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  margin-left: 6px;
+}
+
+.raster-gradient {
+  width: 60px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, black, white);
 }
