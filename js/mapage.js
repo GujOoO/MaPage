@@ -235,6 +235,7 @@ function buildGradientCSS(colorMap) {
 function showColorMapMenu(layerId, anchorElement) {
 
   const colorMaps = [
+    'original',
     'grayscale',
     'viridis',
     'magma',
@@ -258,21 +259,41 @@ function showColorMapMenu(layerId, anchorElement) {
 
     const preview = document.createElement('div');
     preview.className = 'colormap-preview';
-    preview.style.background = buildGradientCSS(mapName);
+    if (mapName === 'original') {
+      preview.textContent = '---canc---';
+      preview.style.background = null;
+      preview.style.alignItems = 'center';
+      preview.style.justifyContent = 'center';
+      preview.style.display = 'flex';
+      preview.style.fontSize = '9px';
+    } else {
+      preview.style.background = buildGradientCSS(mapName);
+    }
 
     item.appendChild(preview);
 
     item.addEventListener('click', () => {
 
       const entry = layers.get(layerId);
-      entry.colorMap = mapName;
+
+      if (mapName === 'original') {
+        entry.colorMap = null;
+      } else {
+        entry.colorMap = mapName;
+      }
 
       entry.layer.redraw();
 
-      anchorElement.style.background = buildGradientCSS(mapName);
+      // 🔁 Ricarica la voce UI
+      const li = document.querySelector(`[data-layer-id="${layerId}"]`);
+      if (li) {
+        li.remove();
+        addLayerListItem(layerId, entry.name);
+      }
 
       menu.remove();
     });
+
 
     menu.appendChild(item);
   });
@@ -333,6 +354,7 @@ async function addGeoTiffLayer(name, file) {
 
   rasterLayer.addTo(map);
 
+  const isRGB = georaster.numberOfRasters >= 3;
   layers.set(id, {
     layer: rasterLayer,
     name,
@@ -340,7 +362,8 @@ async function addGeoTiffLayer(name, file) {
     data: null,
     min: georaster.mins[0],
     max: georaster.maxs[0],
-    colorMap: null
+    colorMap: null,
+    isRGB
   });
 
 
@@ -478,29 +501,48 @@ function addLayerListItem(id, name) {
   const entry = layers.get(id);
   if (entry?.type === 'raster') {
 
-    const legend = document.createElement('div');
-    legend.className = 'raster-legend';
+  const legend = document.createElement('div');
+  legend.className = 'raster-legend';
 
-    const minLabel = document.createElement('span');
-    minLabel.textContent = entry.min.toFixed(2);
+  const minLabel = document.createElement('span');
+  minLabel.textContent = entry.min.toFixed(2);
 
-    const gradient = document.createElement('div');
-    gradient.className = 'raster-gradient';
-    gradient.style.background = gradient.style.background = entry.colorMap
-      ? buildGradientCSS(entry.colorMap)
-      : 'linear-gradient(to right, black, white)';
+  const maxLabel = document.createElement('span');
+  maxLabel.textContent = entry.max.toFixed(2);
 
-    gradient.style.cursor = 'pointer';
+  //  RGB and no palette active
+  if (entry.isRGB && !entry.colorMap) {
 
-    gradient.addEventListener('click', (e) => {
-      e.stopPropagation();
-      showColorMapMenu(id, gradient);
-    });
+      const pctButton = document.createElement('div');
+      pctButton.className = 'raster-pct-button';
+      pctButton.textContent = 'to PCT';
+      pctButton.style.cursor = 'pointer';
 
-    const maxLabel = document.createElement('span');
-    maxLabel.textContent = entry.max.toFixed(2);
+      pctButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showColorMapMenu(id, pctButton);
+      });
 
-    legend.append(minLabel, gradient, maxLabel);
+      legend.append(pctButton);
+
+    } else {
+
+      const gradient = document.createElement('div');
+      gradient.className = 'raster-gradient';
+      gradient.style.cursor = 'pointer';
+
+      gradient.style.background = buildGradientCSS(
+        entry.colorMap || 'grayscale'
+      );
+
+      gradient.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showColorMapMenu(id, gradient);
+      });
+
+      legend.append(minLabel, gradient, maxLabel);
+    }
+
     right.appendChild(legend);
   }
   label.className = 'layer-name';
