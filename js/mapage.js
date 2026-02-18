@@ -179,42 +179,46 @@ function getDisplayName(fileName) {
    GEOTIFF / COG SUPPORT (Client-side rendering)
 ========================================================= */
 const rasterStyle = {colorMap: null};
+function reverseColor(value, reverse = false) {
+  return reverse ? 1 - value : value;
+}
+
 
 function getColorFromNormalized(value, colorMap) {
   value = Math.max(0, Math.min(1, value));
 
-  switch (colorMap) {
+  const reverse = colorMap.endsWith('_r');
+  const baseMap = colorMap.replace('_r', '');
+
+  const v = reverseColor(value, reverse);
+
+  switch (baseMap) {
 
     case 'viridis':
-      return `hsl(${260 - value * 260}, 70%, ${30 + value * 40}%)`;
-
-    case 'inferno':
-      return `hsl(${30 - value * 30}, 100%, ${20 + value * 50}%)`;
+      return `hsl(${260 - v * 260}, 70%, ${30 + v * 40}%)`;
 
     case 'magma':
-      return `hsl(${300 - value * 300}, 80%, ${20 + value * 50}%)`;
+      return `hsl(${300 - v * 300}, 80%, ${20 + v * 50}%)`;
 
     case 'ylOrRd':
-      return `hsl(${60 - value * 60}, 100%, ${50 + value * 25}%)`;
-    
+      return `hsl(${60 - v * 60}, 100%, ${50 - v * 25}%)`;
+
+    case 'blWtRd':
+      if (v < 0.5) {
+        return `hsl(${220}, 80%, ${40 + v * 40}%)`;
+      } else {
+        return `hsl(${0}, 80%, ${80 - (v - 0.5) * 60}%)`;
+      }
+  
     case 'greens':
-      return `hsl(${120 - value * 40}, ${30 + value * 50}%, ${80 - value * 40}%)`;
+      return `hsl(${120}, ${40 + v * 40}%, ${85 - v * 45}%)`;
 
     case 'blues':
-      return `hsl(${200 - value * 60}, ${40 + value * 40}%, ${85 - value * 50}%)`;
-
-    case 'rdOrYl':
-      return `hsl(${0 + value * 60}, 100%, ${75 - value * 25}%)`;
-    
-    case 'hGreens':
-      return `hsl(${80 + value * 40}, ${80 - value * 50}%, ${40 + value * 40}%)`;
-
-    case 'hBlues':
-      return `hsl(${140 + value * 60}, ${80 - value * 40}%, ${35 + value * 50}%)`;
+      return `hsl(${210}, ${40 + v * 40}%, ${90 - v * 50}%)`;
 
     case 'grayscale':
     default:
-      const gray = Math.floor(value * 255);
+      const gray = Math.floor(v * 255);
       return `rgb(${gray},${gray},${gray})`;
   }
 }
@@ -237,15 +241,19 @@ function showColorMapMenu(layerId, anchorElement) {
   const colorMaps = [
     'original',
     'grayscale',
+    'grayscale_r',
     'viridis',
+    'viridis_r',
     'magma',
-    'inferno',
+    'magma_r',
     'ylOrRd',
+    'ylOrRd_r',
+    'blWtRd',
+    'blWtRd_r',
     'greens',
+    'greens_r',
     'blues',
-    'rdOrYl',
-    'hGreens',
-    'hBlues'
+    'blues_r'
   ];
 
 
