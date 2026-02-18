@@ -194,11 +194,97 @@ function getColorFromNormalized(value, colorMap) {
     case 'magma':
       return `hsl(${300 - value * 300}, 80%, ${20 + value * 50}%)`;
 
+    case 'ylOrRd':
+      return `hsl(${60 - value * 60}, 100%, ${50 + value * 25}%)`;
+    
+    case 'greens':
+      return `hsl(${120 - value * 40}, ${30 + value * 50}%, ${80 - value * 40}%)`;
+
+    case 'blues':
+      return `hsl(${200 - value * 60}, ${40 + value * 40}%, ${85 - value * 50}%)`;
+
+    case 'rdOrYl':
+      return `hsl(${0 + value * 60}, 100%, ${75 - value * 25}%)`;
+    
+    case 'hGreens':
+      return `hsl(${80 + value * 40}, ${80 - value * 50}%, ${40 + value * 40}%)`;
+
+    case 'hBlues':
+      return `hsl(${140 + value * 60}, ${80 - value * 40}%, ${35 + value * 50}%)`;
+
     case 'grayscale':
     default:
       const gray = Math.floor(value * 255);
       return `rgb(${gray},${gray},${gray})`;
   }
+}
+
+function buildGradientCSS(colorMap) {
+  const steps = 20;
+  const colors = [];
+
+  for (let i = 0; i <= steps; i++) {
+    const value = i / steps;
+    colors.push(getColorFromNormalized(value, colorMap));
+  }
+
+  return `linear-gradient(to right, ${colors.join(',')})`;
+}
+
+/* Show color for raster */
+function showColorMapMenu(layerId, anchorElement) {
+
+  const colorMaps = [
+    'grayscale',
+    'viridis',
+    'magma',
+    'inferno',
+    'ylOrRd',
+    'greens',
+    'blues',
+    'rdOrYl',
+    'hGreens',
+    'hBlues'
+  ];
+
+
+  const menu = document.createElement('div');
+  menu.className = 'colormap-menu';
+
+  colorMaps.forEach(mapName => {
+
+    const item = document.createElement('div');
+    item.className = 'colormap-item';
+
+    const preview = document.createElement('div');
+    preview.className = 'colormap-preview';
+    preview.style.background = buildGradientCSS(mapName);
+
+    item.appendChild(preview);
+
+    item.addEventListener('click', () => {
+
+      const entry = layers.get(layerId);
+      entry.colorMap = mapName;
+
+      entry.layer.redraw();
+
+      anchorElement.style.background = buildGradientCSS(mapName);
+
+      menu.remove();
+    });
+
+    menu.appendChild(item);
+  });
+
+  document.body.appendChild(menu);
+
+  const rect = anchorElement.getBoundingClientRect();
+  menu.style.position = 'absolute';
+  menu.style.left = rect.left + 'px';
+  menu.style.top = rect.bottom + 'px';
+
+  document.addEventListener('click', () => menu.remove(), { once: true });
 }
 
 
@@ -233,7 +319,9 @@ async function addGeoTiffLayer(name, file) {
 
       const normalized = (value - min) / (max - min);
 
-      return getColorFromNormalized(normalized, rasterStyle.colorMap);
+      const entry = layers.get(id);
+      return getColorFromNormalized(normalized, entry.colorMap);
+
     }
   });
 
@@ -245,8 +333,10 @@ async function addGeoTiffLayer(name, file) {
     type: 'raster',
     data: null,
     min: georaster.mins[0],
-    max: georaster.maxs[0]
+    max: georaster.maxs[0],
+    colorMap: 'grayscale'
   });
+
 
   addLayerListItem(id, name);
 
@@ -390,6 +480,13 @@ function addLayerListItem(id, name) {
 
     const gradient = document.createElement('div');
     gradient.className = 'raster-gradient';
+    gradient.style.background = buildGradientCSS(rasterStyle.colorMap);
+    gradient.style.cursor = 'pointer';
+
+    gradient.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showColorMapMenu(id, gradient);
+    });
 
     const maxLabel = document.createElement('span');
     maxLabel.textContent = entry.max.toFixed(2);
