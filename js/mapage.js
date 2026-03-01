@@ -25,11 +25,34 @@ const map = L.map('map', {
 });
 
 // Geocoder control
-L.Control.geocoder({
-  defaultMarkGeocode: true,
-  position: 'topleft'
-}).addTo(map);
+let tempMarker;
 
+L.Control.geocoder({
+  defaultMarkGeocode: false,
+  position: 'topleft'
+}).on('markgeocode', function(e) {
+
+  const center = e.geocode.center;
+
+  // remove previous marker
+  if (tempMarker) {
+    map.removeLayer(tempMarker);
+  }
+
+  tempMarker = L.marker(center, {
+    riseOnHover: true
+  }).addTo(map);
+
+  map.setView(center, 16);
+
+  // remove marker after animation 3 seconds
+  setTimeout(() => {
+    if (tempMarker) {
+      map.removeLayer(tempMarker);
+      tempMarker = null;
+    }
+  }, 3000);
+}).addTo(map);
 
 // Create custom panes to position Raster vs Vector
 map.createPane('rasterPane');
