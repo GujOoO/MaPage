@@ -229,3 +229,34 @@ body {
   height: 10px;
   border-radius: 4px;
 }
+
+/* legend */
+.legend-window {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  background: rgba(255,255,255,0.95);
+  padding: 8px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  font-size: 12px;
+  max-width: 250px;
+  z-index: 1500;
+  cursor: move;
+}
+
+.legend-content {
+  cursor: default;
+}
+
+.layer-info {
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  user-select: none;
+}
+
+.layer-info:hover {
+  opacity: 1;
+}

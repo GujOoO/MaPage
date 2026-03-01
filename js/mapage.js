@@ -23,6 +23,14 @@ const map = L.map('map', {
   zoom: defaultZoom,
   layers: [osm],
 });
+
+// Geocoder control
+L.Control.geocoder({
+  defaultMarkGeocode: true,
+  position: 'topleft'
+}).addTo(map);
+
+
 // Create custom panes to position Raster vs Vector
 map.createPane('rasterPane');
 map.getPane('rasterPane').style.zIndex = 200;
@@ -386,6 +394,58 @@ async function addGeoTiffLayer(name, file) {
 /* =========================================================
    LAYER MANAGEMENT
 ========================================================= */
+// Add legend
+function addLegendWindow(layerId, htmlContent) {
+
+  const legend = document.createElement('div');
+  legend.className = 'legend-window';
+  legend.dataset.layerId = layerId;
+
+  const content = document.createElement('div');
+  content.className = 'legend-content';
+  content.innerHTML = htmlContent;
+
+  legend.appendChild(content);
+  document.body.appendChild(legend);
+
+  // Draggable
+  let isDragging = false;
+  let startX, startY, startLeft, startTop;
+
+  legend.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+
+    const rect = legend.getBoundingClientRect();
+    startLeft = rect.left;
+    startTop = rect.top;
+
+    document.body.style.userSelect = 'none';
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    legend.style.left = `${startLeft + (e.clientX - startX)}px`;
+    legend.style.top = `${startTop + (e.clientY - startY)}px`;
+  });
+
+  window.addEventListener('mouseup', () => {
+    isDragging = false;
+    document.body.style.userSelect = '';
+  });
+
+  return legend;
+}
+
+function toggleLegendWindow(layerId) {
+  const legend = document.querySelector(`.legend-window[data-layer-id="${layerId}"]`);
+  if (!legend) return;
+
+  const isHidden = legend.style.display === 'none';
+  legend.style.display = isHidden ? 'block' : 'none';
+}
 
 // Add a new Vector layer to the map
 function addVectorLayer(name, geojson) {
@@ -402,10 +462,14 @@ function addVectorLayer(name, geojson) {
     layer: layerGroup,
     name,
     type: 'vector',
-    data: geojson
+    data: geojson,
+    legend: geojson.legend || null
   });
 
   addLayerListItem(id, name);
+  if (geojson.legend) {
+    addLegendWindow(id, geojson.legend);
+  }
   fitToAllLayers();
 
   return id;
@@ -415,6 +479,10 @@ function addVectorLayer(name, geojson) {
 function removeLayer(id) {
   const entry = layers.get(id);
   if (!entry) return;
+
+  // Remove Layer
+  const legend = document.querySelector(`.legend-window[data-layer-id="${id}"]`);
+  if (legend) legend.remove();
 
   map.removeLayer(entry.layer);
   layers.delete(id);
@@ -434,8 +502,23 @@ function toggleLayer(id, visible) {
   const entry = layers.get(id);
   if (!entry) return;
 
-  if (visible) entry.layer.addTo(map);
-  else map.removeLayer(entry.layer);
+  if (visible) {
+    entry.layer.addTo(map);
+
+    // show legend only if exists
+    if (entry.legend) {
+      const legend = document.querySelector(`.legend-window[data-layer-id="${id}"]`);
+      if (legend) legend.style.display = 'block';
+    }
+
+  } else {
+    map.removeLayer(entry.layer);
+
+    if (entry.legend) {
+      const legend = document.querySelector(`.legend-window[data-layer-id="${id}"]`);
+      if (legend) legend.style.display = 'none';
+    }
+  }
 
   fitToAllLayers();
 }
@@ -445,12 +528,16 @@ function fitToAllLayers() {
   const allBounds = [];
 
   layers.forEach(({ layer }) => {
+    // only visible layer
+    if (!map.hasLayer(layer)) return;
+
     const b = layer.getBounds?.();
     if (b?.isValid?.()) allBounds.push(b);
   });
 
-  if (!allBounds.length) return;
+  if (allBounds.length === 0)  return; // if no layer no de-zoom
 
+  // zoom all layer
   let combined = allBounds[0];
   for (let i = 1; i < allBounds.length; i++) {
     combined = combined.extend(allBounds[i]);
@@ -504,9 +591,27 @@ function addLayerListItem(id, name) {
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.checked = true;
-
   const label = document.createElement('span');
   const entry = layers.get(id);
+  left.appendChild(checkbox);
+  left.appendChild(label);
+
+  // Info icon (only if legend exists)
+  if (entry?.type === 'vector' && entry?.legend) {
+
+    const infoIcon = document.createElement('span');
+    infoIcon.className = 'layer-info';
+    infoIcon.textContent = '🛈';
+    infoIcon.title = 'Toggle legend';
+
+    infoIcon.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleLegendWindow(id);
+    });
+
+    left.appendChild(infoIcon);
+  }
+
   if (entry?.type === 'raster') {
 
   const legend = document.createElement('div');
@@ -556,10 +661,6 @@ function addLayerListItem(id, name) {
   label.className = 'layer-name';
   label.textContent = name;
   label.title = name;
-
-
-  left.append(checkbox, label);
-
   const trash = document.createElement('button');
   trash.className = 'layer-trash';
   trash.textContent = '🗑';

@@ -26,7 +26,14 @@ It was built with one goal in mind: to let anyone open and explore geospatial da
 ## Import Your Style
 ### GeoJSON
 
-You can customize the style of each feature in your GeoJSON file by adding specific properties to the `properties` object.
+The visualization of a GeoJSON layer can be customized by:
+
+ - Adding a global `legend` attribute at the FeatureCollection level.
+ - Defining styling parameters inside the `properties` object of each feature.
+
+The global `legend` property can contain HTML content used to render a custom legend for the layer.
+
+This allows full control over the rendering of geometries.
 
 > **Note:**
 > - If a feature has no styling properties, the default values above are applied automatically.
@@ -76,6 +83,7 @@ An example of GeoJSON:
 ```json
 {
   "type": "FeatureCollection",
+  "legend": "<b>GeoJSON Style</b><br><span style='color:#ff0000;'>■</span> Example of a Point geometry<br><span style='color:#00aa00;'>■</span> Example of a LineString geometry<br><span style='color:#ccccff;'>■</span> Example of a Polygon geometry",
   "features": [
     {
       "type": "Feature",
@@ -164,10 +172,14 @@ The following color palettes are available for single-band rendering and RGB-to-
 MaPage is built using the following open-source libraries and data sources:
 
 - **[Leaflet](https://leafletjs.com/)** – Interactive maps library  
+- **[Leaflet Control Geocoder](https://github.com/perliedman/leaflet-control-geocoder)** – Geocoding control plugin for Leaflet.
+Licensed under the BSD-2-Clause License
+Copyright © 2012 sa3m, © 2013 Per Liedman  
 - **[OpenStreetMap](https://www.openstreetmap.org/)** – Base map data  
 - **[Georaster](https://github.com/GeoTIFF/georaster)** – Client-side GeoTIFF parsing  
 - **[Georaster-layer-for-leaflet](https://github.com/GeoTIFF/georaster-layer-for-leaflet)** – GeoTIFF rendering in Leaflet  
 - **[GeoTIFF.js](https://github.com/geotiffjs/geotiff.js)** – GeoTIFF decoding library  
+
 
 
 
